@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実験ツール (Excel連携版)</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --bg: #f4f6f9;
+        }
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            background: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
+        
+        /* Layout */
+        .layout-split { display: flex; gap: 20px; }
+        .main-panel { flex: 2; }
+        .side-panel { flex: 1; border-left: 1px solid #eee; padding-left: 20px; }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* UI Elements */
+        .config-box { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        select { padding: 8px; font-size: 1rem; width: 100%; margin-bottom: 10px; }
+        button {
+            background: var(--accent); color: white; border: none;
+            padding: 10px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer;
+            transition: background 0.2s; width: 100%;
+        }
+        button:hover { background: #1c6ea4; }
+        button.btn-green { background: #27ae60; }
+        button.btn-green:hover { background: #219150; }
+        button.btn-gray { background: #95a5a6; }
+
+        /* Game Grid */
+        .target-box {
+            background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
+            padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px;
+        }
+        .target-name { font-size: 1.8rem; font-weight: bold; }
+        
+        .breadcrumbs { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 10px; padding: 5px; background: #fafafa; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+        .item {
+            padding: 15px 5px; min-height: 70px;
+            border: 1px solid #ddd; border-radius: 6px;
+            background: #fff; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+            user-select: none;
+        }
+        .item:hover { background: #f9f9f9; border-color: #bbb; }
+        .item.folder { border-top: 4px solid #f39c12; background: #fffbf0; }
+        .item.leaf { border-top: 4px solid #2ecc71; background: #f0fdf4; }
+        
+        /* History Table */
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+        .history-table th, .history-table td { border-bottom: 1px solid #eee; padding: 6px; text-align: left; }
+        .history-table th { background: #f8f9fa; color: #666; }
+        .history-table tr:first-child td { font-weight: bold; color: var(--accent); } /* Newest entry */
+
+        /* Utility */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #333; color: #fff; padding: 10px 20px; border-radius: 4px;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="container layout-split">
+    
+    <div class="main-panel">
+        <h1>実験ツール (Excel連携版)</h1>
+
+        <div id="screen-config" class="screen active">
+            <div class="config-box">
+                <label><strong>階層深度 (Depth):</strong></label>
+                <select id="depth-select">
+                    <option value="1">D=1 (フラット: 256択)</option>
+                    <option value="2">D=2 (16カテゴリ × 16)</option>
+                    <option value="4">D=4 (4ジャンル > 4 > 4 > 4)</option>
+                    <option value="8">D=8 (詳細属性ツリー)</option>
+                </select>
+                <p style="font-size:0.8rem; color:#666; margin:5px 0 15px;">
+                    ※ 右側の履歴パネルに結果が蓄積されます。
+                </p>
+                <button onclick="App.start()">実験スタート</button>
+            </div>
+        </div>
+
+        <div id="screen-game" class="screen">
+            <div class="target-box">
+                <div style="font-size:0.8rem;">TARGET</div>
+                <div class="target-name" id="target-disp"></div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button class="btn-gray" onclick="App.up()" id="btn-back" style="width:auto;">← 戻る</button>
+                <div class="breadcrumbs" id="breadcrumbs">Top</div>
+            </div>
+
+            <div id="grid-area" class="grid"></div>
+        </div>
+
+        <div id="screen-result" class="screen">
+            <div style="text-align:center; padding: 30px; background:#f8f9fa; border-radius:8px;">
+                <h2 style="color:#27ae60; margin:0 0 10px;">実験完了</h2>
+                <div style="font-size:2rem; font-weight:bold; color:#333; margin-bottom:20px;">
+                    <span id="res-time"></span> ms
+                </div>
+                
+                <div style="display:grid; gap:10px; max-width:300px; margin:0 auto;">
+                    <button class="btn-green" onclick="App.copyResult()">
+                        📋 結果をコピー (Excel用)
+                    </button>
+                    <button onclick="App.retry()">次の実験へ</button>
+                    <button class="btn-gray" onclick="App.resetConfig()">設定に戻る</button>
+                </div>
+                <p style="font-size:0.8rem; color:#666; margin-top:10px;">
+                    ※コピーボタンを押してExcelで貼り付け(Ctrl+V)してください。<br>
+                    形式: [深度] [ターゲット] [時間] [誤回答]
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <h3>記録データ</h3>
+        <p style="font-size:0.8rem; color:#666;">ブラウザを閉じるまで保持されます</p>
+        
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>D</th>
+                    <th>Time</th>
+                    <th>Error</th>
+                    <th>Target</th>
+                </tr>
+            </thead>
+            <tbody id="history-body">
+                </tbody>
+        </table>
+
+        <div style="margin-top:20px;">
+            <button class="btn-gray" onclick="App.downloadAllCSV()">💾 まとめてCSV保存</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">コピーしました！</div>
+
+<script>
+/**
+ * データセット生成ロジック (D=8対応版)
+ */
+const Dataset = {
+    raw: {
+        "動物": {
+            "陸上・大型": { "肉食": ["ライオン","トラ","チーター","ヒョウ"], "草食": ["ゾウ","キリン","サイ","カバ"], "クマ類": ["ヒグマ","シロクマ","パンダ","ツキノワグマ"], "ウマ類": ["シマウマ","ウマ","ロバ","ポニー"] },
+            "陸上・小型": { "イヌ科": ["オオカミ","キツネ","タヌキ","イヌ"], "サル目": ["ゴリラ","チンパンジー","ニホンザル","リスザル"], "げっ歯": ["ネズミ","リス","ハムスター","カピバラ"], "小動物": ["ウサギ","ハリネズミ","モグラ","スカンク"] },
+            "水辺": { "海獣": ["クジラ","イルカ","シャチ","アザラシ"], "水辺": ["ワニ","ビーバー","カワウソ","カモノハシ"], "極地": ["ペンギン","セイウチ","オットセイ","トド"], "魚類": ["サメ","エイ","マンボウ","カメ"] },
+            "空": { "猛禽": ["ワシ","タカ","フクロウ","トビ"], "野鳥": ["スズメ","カラス","ハト","ツバメ"], "家禽": ["ニワトリ","アヒル","ダチョウ","クジャク"], "水鳥": ["ハクチョウ","カモ","ペリカン","フラミンゴ"] }
+        },
+        "食べ物": {
+            "野菜": { "根菜": ["ニンジン","ダイコン","イモ","サツマイモ"], "葉物": ["キャベツ","レタス","ホウレンソウ","ハクサイ"], "実": ["トマト","キュウリ","ナス","ピーマン"], "香": ["ネギ","タマネギ","ショウガ","ニンニク"] },
+            "果物": { "柑橘": ["ミカン","レモン","バナナ","パイン"], "バラ科": ["リンゴ","ナシ","モモ","サクランボ"], "ベリー": ["イチゴ","ブドウ","メロン","スイカ"], "他": ["キウイ","カキ","マンゴー","クリ"] },
+            "和食": { "飯": ["おにぎり","炒飯","カレー","牛丼"], "麺": ["ラーメン","うどん","そば","パスタ"], "魚": ["寿司","刺身","焼き魚","天ぷら"], "粉": ["お好み焼き","たこ焼き","パン","ピザ"] },
+            "洋食": { "肉": ["ステーキ","ハンバーグ","唐揚げ","ソーセージ"], "汁": ["味噌汁","スープ","シチュー","グラタン"], "洋菓": ["ケーキ","プリン","クッキー","ドーナツ"], "和菓": ["団子","大福","羊羹","たい焼き"] }
+        },
+        "スポーツ": {
+            "球技": { "チーム": ["サッカー","野球","ラグビー","アメフト"], "ネット": ["バレー","バスケ","ハンド","ドッジ"], "ラケット": ["テニス","卓球","バド","スカッシュ"], "個人": ["ゴルフ","ボウリング","ビリヤード","ダーツ"] },
+            "陸上": { "走": ["短距離","マラソン","駅伝","ハードル"], "跳": ["高跳び","幅跳び","棒高跳び","三段跳び"], "投": ["砲丸","やり","円盤","ハンマー"], "体操": ["マット","跳び箱","鉄棒","新体操"] },
+            "格闘": { "日本": ["柔道","剣道","空手","相撲"], "打撃": ["ボクシング","キック","テコンドー","ムエタイ"], "組技": ["レスリング","サンボ","柔術","合気道"], "武器": ["フェンシング","なぎなた","弓道","アーチェリー"] },
+            "水泳": { "泳": ["クロール","平泳ぎ","背泳ぎ","バタフライ"], "雪": ["スキー","スノボ","ジャンプ","クロカン"], "氷": ["スケート","フィギュア","ホッケー","カーリング"], "水": ["サーフィン","ヨット","カヌー","水球"] }
+        },
+        "日用品": {
+            "家具": { "寝": ["椅子","ソファ","ベッド","座布団"], "机": ["テーブル","デスク","本棚","タンス"], "光": ["蛍光灯","ライト","カーテン","鏡"], "飾": ["時計","カレンダー","花瓶","クッション"] },
+            "家電": { "厨": ["冷蔵庫","レンジ","炊飯器","トースター"], "生": ["洗濯機","掃除機","アイロン","エアコン"], "AV": ["テレビ","スピーカー","ヘッドホン","カメラ"], "PC": ["パソコン","スマホ","タブレット","プリンタ"] },
+            "文具": { "書": ["鉛筆","ペン","万年筆","マジック"], "消": ["消しゴム","ハサミ","カッター","修正液"], "貼": ["のり","テープ","ホッチキス","クリップ"], "紙": ["ノート","手帳","封筒","ファイル"] },
+            "衣類": { "上": ["Tシャツ","シャツ","セーター","ジャケット"], "下": ["ズボン","スカート","ジーンズ","短パン"], "靴": ["靴下","スニーカー","ブーツ","サンダル"], "小": ["帽子","手袋","マフラー","ベルト"] }
+        }
+    },
+    // D=8用のパス生成 (省略版)
+    getDeepPath(g, c, s, items) {
+        // 簡易ロジック: 4アイテムを2+2に分割
+        return items.map((itm, i) => {
+            const l1 = (g=="動物"||g=="食べ物") ? "自然" : "人工";
+            const l7 = (i<2) ? `${items[0]}・${items[1]}` : `${items[2]}・${items[3]}`;
+            return { name: itm, path: [l1, g, c, s, l7] };
+        });
+    },
+    getList() {
+        let list = [];
+        for(let g in this.raw) for(let c in this.raw[g]) for(let s in this.raw[g][c]) {
+            const arr = this.raw[g][c][s];
+            const deep = this.getDeepPath(g,c,s,arr);
+            deep.forEach(d => list.push({
+                name: d.name, path4: [g,c,s], path8: d.path
+            }));
+        }
+        return list;
+    }
+};
+
+const App = {
+    state: {
+        history: [], // 全データ蓄積用
+        depth: 1, items: [], target: null,
+        pathStack: [], startTime: 0, endTime: 0, errors: 0
+    },
+
+    start() {
+        this.state.depth = parseInt(document.getElementById('depth-select').value);
+        this.state.items = Dataset.getList();
+        this.state.errors = 0;
+        this.state.pathStack = [];
+        
+        const idx = Math.floor(Math.random() * this.state.items.length);
+        this.state.target = this.state.items[idx].name;
+        
+        document.getElementById('target-disp').textContent = this.state.target;
+        this.switchScreen('screen-game');
+        
+        const root = this.buildTree();
+        this.enter(root);
+        this.state.startTime = performance.now();
+    },
+
+    buildTree() {
+        const d = this.state.depth;
+        const list = this.state.items;
+        
+        const root = { label: "Top", children: [] };
+        
+        // D=1: Flat Random
+        if(d === 1) {
+            const s = [...list].sort(()=>Math.random()-0.5);
+            root.children = s.map(i => ({ isLeaf:true, label:i.name }));
+            return root;
+        }
+
+        // Recursive Builder
+        const build = (arr, level, maxL, pKey) => {
+            if(level >= maxL) return arr.map(i => ({ isLeaf:true, label:i.name }));
+            
+            const groups = {};
+            arr.forEach(i => {
+                let key = "";
+                if(d===2) key = `${i.path4[0]}・${i.path4[1]}`; // Genre+Cat
+                else if(d===4) key = i.path4[level];
+                else if(d===8) key = i.path8[level];
+                
+                if(!groups[key]) groups[key] = [];
+                groups[key].push(i);
+            });
+            
+            return Object.keys(groups).map(k => ({
+                isLeaf:false, label:k,
+                hint: `${groups[k].length}`,
+                children: build(groups[k], level+(d===2?10:1), maxL, pKey)
+            }));
+        };
+
+        // Execution
+        let maxL = (d===2)?1 : (d===4)?3 : 5; // D=8はpath8[0..4]まで
+        root.children = build(list, 0, maxL, "");
+        return root;
+    },
+
+    enter(node) {
+        this.state.pathStack.push(node);
+        this.render();
+    },
+    up() {
+        if(this.state.pathStack.length > 1) {
+            this.state.pathStack.pop();
+            this.render();
+        }
+    },
+    render() {
+        const cur = this.state.pathStack[this.state.pathStack.length-1];
+        const area = document.getElementById('grid-area');
+        const crumbs = document.getElementById('breadcrumbs');
+        const btn = document.getElementById('btn-back');
+        
+        crumbs.innerHTML = this.state.pathStack.map(n => `<span style="margin:0 5px;">${n.label.split("・")[0]}</span>`).join(">");
+        btn.disabled = (this.state.pathStack.length <= 1);
+        area.innerHTML = "";
+        
+        cur.children.forEach(c => {
+            const el = document.createElement('div');
+            el.className = `item ${c.isLeaf ? 'leaf' : 'folder'}`;
+            el.innerHTML = c.isLeaf ? 
+                `<strong>${c.label}</strong>` : 
+                `<strong>${c.label}</strong><span style="font-size:0.7em;color:#666">(${c.hint})</span>`;
+            
+            el.onclick = c.isLeaf ? () => this.check(c.label, el) : () => this.enter(c);
+            area.appendChild(el);
+        });
+    },
+
+    check(name, el) {
+        if(name === this.state.target) {
+            this.finish();
+        } else {
+            this.state.errors++;
+            el.style.borderColor = "red";
+            setTimeout(()=>el.style.borderColor="#ddd", 300);
+        }
+    },
+
+    finish() {
+        this.state.endTime = performance.now();
+        const time = Math.round(this.state.endTime - this.state.startTime);
+        
+        // 履歴に追加
+        const result = {
+            id: this.state.history.length + 1,
+            depth: this.state.depth,
+            time: time,
+            error: this.state.errors,
+            target: this.state.target,
+            timestamp: new Date().toLocaleTimeString()
+        };
+        this.state.history.unshift(result); // 先頭に追加
+        this.updateHistoryUI();
+
+        // 結果画面表示
+        document.getElementById('res-time').textContent = time;
+        this.switchScreen('screen-result');
+    },
+
+    updateHistoryUI() {
+        const tbody = document.getElementById('history-body');
+        tbody.innerHTML = this.state.history.map(r => `
+            <tr>
+                <td>${r.depth}</td>
+                <td>${r.time}</td>
+                <td>${r.error}</td>
+                <td style="font-size:0.8em">${r.target}</td>
+            </tr>
+        `).join("");
+    },
+
+    // クリップボードにタブ区切りでコピー
+    copyResult() {
+        const last = this.state.history[0]; // 最新
+        // Excel用フォーマット: 深度 [TAB] ターゲット [TAB] 時間 [TAB] エラー
+        const text = `${last.depth}\t${last.target}\t${last.time}\t${last.error}`;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        });
+    },
+
+    retry() { this.start(); }, // 同じ設定で再開
+    resetConfig() { this.switchScreen('screen-config'); },
+
+    switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    },
+
+    downloadAllCSV() {
+        if(this.state.history.length === 0) return alert("データがありません");
+        
+        // CSVヘッダ
+        let csv = "\uFEFF実験ID,時刻,深度(D),ターゲット,時間(ms),誤回答\n";
+        // データ行（古い順に並べ替え）
+        [...this.state.history].reverse().forEach(r => {
+            csv += `${r.id},${r.timestamp},${r.depth},${r.target},${r.time},${r.error}\n`;
+        });
+
+        const blob = new Blob([csv], {type:'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `experiment_summary_${new Date().getTime()}.csv`;
+        a.click();
+    }
+};
+</script>
+</body>
+</html>
