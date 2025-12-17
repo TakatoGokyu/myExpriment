@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -33,19 +34,44 @@
             background: #fff;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
         }
 
         /* Screen Management */
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
 
         /* Headers & Text */
-        h1 { margin: 0 0 15px 0; font-size: 1.4rem; color: var(--primary); text-align: center; }
-        p { font-size: 0.9rem; color: #666; line-height: 1.5; }
+        h1 {
+            margin: 0 0 15px 0;
+            font-size: 1.4rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
 
         /* UI Elements */
         .btn-large {
@@ -61,7 +87,11 @@
             margin-top: 20px;
             transition: opacity 0.2s;
         }
-        .btn-large:active { opacity: 0.8; }
+
+        .btn-large:active {
+            opacity: 0.8;
+        }
+
         .btn-secondary {
             background: #95a5a6;
             color: white;
@@ -79,6 +109,7 @@
             height: 10px;
             overflow: hidden;
         }
+
         .progress-bar {
             height: 100%;
             background: var(--accent);
@@ -105,8 +136,19 @@
             border-radius: 8px;
             margin-bottom: 15px;
         }
-        .target-label { font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 4px; }
-        .target-name { font-size: 1.8rem; font-weight: bold; word-break: break-all; }
+
+        .target-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .target-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            word-break: break-all;
+        }
 
         .breadcrumbs {
             font-size: 0.85rem;
@@ -120,16 +162,21 @@
         /* Responsive Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Default mobile: 2 cols */
+            grid-template-columns: repeat(2, 1fr);
+            /* Default mobile: 2 cols */
             gap: 10px;
             margin-bottom: 20px;
         }
+
         @media (min-width: 600px) {
-            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
         }
 
         .item {
-            aspect-ratio: 4/3; /* スマホでタップしやすいサイズ比 */
+            aspect-ratio: 4/3;
+            /* スマホでタップしやすいサイズ比 */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -144,467 +191,641 @@
             transition: transform 0.1s;
             -webkit-tap-highlight-color: transparent;
         }
-        .item:active { transform: scale(0.98); background: #f5f5f5; }
 
-        .item.folder { border-top: 4px solid var(--folder-border); background: var(--folder-bg); }
-        .item.leaf { border-top: 4px solid var(--leaf-border); background: var(--leaf-bg); }
-        
-        .folder-label { font-weight: bold; font-size: 1rem; color: #d35400; line-height: 1.2; }
-        .folder-hint { font-size: 0.75rem; color: #888; margin-top: 4px; }
-        .leaf-label { font-weight: bold; font-size: 1.1rem; color: #27ae60; }
+        .item:active {
+            transform: scale(0.98);
+            background: #f5f5f5;
+        }
 
-        .shake { animation: shake 0.3s; border-color: #e74c3c !important; }
-        @keyframes shake { 0%,100% {transform:translateX(0);} 25% {transform:translateX(-5px);} 75% {transform:translateX(5px);} }
+        .item.folder {
+            border-top: 4px solid var(--folder-border);
+            background: var(--folder-bg);
+        }
+
+        .item.leaf {
+            border-top: 4px solid var(--leaf-border);
+            background: var(--leaf-bg);
+        }
+
+        .folder-label {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #d35400;
+            line-height: 1.2;
+        }
+
+        .folder-hint {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .leaf-label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #27ae60;
+        }
+
+        .shake {
+            animation: shake 0.3s;
+            border-color: #e74c3c !important;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
 
         /* Sending Status */
         .sending-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none; justify-content: center; align-items: center; flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
             z-index: 1000;
         }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    
-    <div id="screen-start" class="screen active">
-        <h1>階層探索実験</h1>
-        <p>これから8回の探索タスクを連続で行います。<br>指示された「ターゲット」をフォルダの中から探してください。</p>
-        <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin:20px 0; font-size:0.9rem;">
-            <strong>実験の流れ:</strong><br>
-            D=1 (2回) → D=2 (2回) → D=4 (2回) → D=8 (2回)<br>
-            <br>
-            ※途中で中断する場合は、右上の「TOPへ」を押してください。
+    <div class="container">
+
+        <div id="screen-start" class="screen active">
+            <h1>階層探索実験</h1>
+            <p>これから8回の探索タスクを連続で行います。<br>指示された「ターゲット」をフォルダの中から探してください。</p>
+            <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin:20px 0; font-size:0.9rem;">
+                <strong>実験の流れ:</strong><br>
+                D=1 (2回) → D=2 (2回) → D=4 (2回) → D=8 (2回)<br>
+                <br>
+                ※途中で中断する場合は、右上の「TOPへ」を押してください。
+            </div>
+            <button class="btn-large" onclick="App.startSession()">実験を開始する</button>
         </div>
-        <button class="btn-large" onclick="App.startSession()">実験を開始する</button>
+
+        <div id="screen-game" class="screen">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="header-nav">
+                <button class="btn-secondary" id="btn-back" onclick="App.up()">← 戻る</button>
+                <button class="btn-secondary" style="background:#e74c3c; font-size:0.8rem;"
+                    onclick="App.quit()">TOPへ</button>
+            </div>
+
+            <div class="target-box">
+                <span class="target-label">TARGET</span>
+                <div class="target-name" id="target-disp">Loading...</div>
+            </div>
+
+            <div class="breadcrumbs" id="breadcrumbs">Top</div>
+            <div id="grid-area" class="grid"></div>
+        </div>
+
+        <div id="screen-end" class="screen">
+            <h1>実験終了</h1>
+            <p>お疲れ様でした。データを送信しています...</p>
+            <div class="spinner"></div>
+        </div>
+
+        <div id="screen-complete" class="screen">
+            <h1 style="color:#27ae60;">送信完了</h1>
+            <p>データが正常に記録されました。</p>
+            <p>ご協力ありがとうございました。</p>
+            <button class="btn-large" onclick="location.reload()">トップに戻る</button>
+        </div>
+
     </div>
 
-    <div id="screen-game" class="screen">
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-
-        <div class="header-nav">
-            <button class="btn-secondary" id="btn-back" onclick="App.up()">← 戻る</button>
-            <button class="btn-secondary" style="background:#e74c3c; font-size:0.8rem;" onclick="App.quit()">TOPへ</button>
-        </div>
-
-        <div class="target-box">
-            <span class="target-label">TARGET</span>
-            <div class="target-name" id="target-disp">Loading...</div>
-        </div>
-
-        <div class="breadcrumbs" id="breadcrumbs">Top</div>
-        <div id="grid-area" class="grid"></div>
-    </div>
-
-    <div id="screen-end" class="screen">
-        <h1>実験終了</h1>
-        <p>お疲れ様でした。データを送信しています...</p>
+    <div id="sending-overlay" class="sending-overlay">
         <div class="spinner"></div>
+        <div style="font-weight:bold; color:#555;">データ送信中...</div>
     </div>
 
-    <div id="screen-complete" class="screen">
-        <h1 style="color:#27ae60;">送信完了</h1>
-        <p>データが正常に記録されました。</p>
-        <p>ご協力ありがとうございました。</p>
-        <button class="btn-large" onclick="location.reload()">トップに戻る</button>
-    </div>
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz0yGZasvKGPvH67ttyiMhJi2od_dJUZxE3SjgvEjWaqAQPgnV0XAMRT7ny6sf-eB0/exec";
+        // 例: "https://script.google.com/macros/s/AKfycbx.../exec"
 
-</div>
+        const SEQUENCE = [1, 1, 2, 2, 4, 4, 8, 8]; // 実験シーケンス
 
-<div id="sending-overlay" class="sending-overlay">
-    <div class="spinner"></div>
-    <div style="font-weight:bold; color:#555;">データ送信中...</div>
-</div>
+        // ==========================================
+        // DATASET GENERATOR (Semantic Path)
+        // ==========================================
+        const Dataset = {
+            // 256 items (4 genres * 4 cats * 4 subs * 4 items)
+            raw: {
+                "動物": {
+                    "大型獣": {
+                        "肉食": ["ライオン", "トラ", "チーター", "ヒョウ"],
+                        "草食": ["ゾウ", "キリン", "サイ", "カバ"],
+                        "クマ科": ["ヒグマ", "シロクマ", "パンダ", "ツキノワグマ"],
+                        "ウマ科": ["シマウマ", "ウマ", "ロバ", "ポニー"]
+                    },
+                    "小型獣": {
+                        "イヌ科": ["オオカミ", "キツネ", "タヌキ", "イヌ"],
+                        "サル類": ["ゴリラ", "チンパンジー", "ニホンザル", "リスザル"],
+                        "げっ歯類": ["ネズミ", "リス", "ハムスター", "カピバラ"],
+                        "小動物": ["ウサギ", "ハリネズミ", "モグラ", "スカンク"]
+                    },
+                    "水生・水辺": {
+                        "海獣": ["クジラ", "イルカ", "シャチ", "アザラシ"],
+                        "水辺": ["ワニ", "ビーバー", "カワウソ", "カモノハシ"],
+                        "極地": ["ペンギン", "セイウチ", "オットセイ", "トド"],
+                        "魚・カメ": ["サメ", "エイ", "マンボウ", "カメ"]
+                    },
+                    "鳥類": {
+                        "猛禽": ["ワシ", "タカ", "フクロウ", "トビ"],
+                        "野鳥": ["スズメ", "カラス", "ハト", "ツバメ"],
+                        "家禽": ["ニワトリ", "アヒル", "ダチョウ", "クジャク"],
+                        "水鳥": ["ハクチョウ", "カモ", "ペリカン", "フラミンゴ"]
+                    }
+                },
+                "食べ物": {
+                    "野菜": {
+                        "根菜": ["ニンジン", "ダイコン", "イモ", "サツマイモ"],
+                        "葉物": ["キャベツ", "レタス", "ホウレンソウ", "ハクサイ"],
+                        "果菜": ["トマト", "キュウリ", "ナス", "ピーマン"],
+                        "香味": ["ネギ", "タマネギ", "ショウガ", "ニンニク"]
+                    },
+                    "果物": {
+                        "柑橘": ["ミカン", "レモン", "バナナ", "パイン"],
+                        "リンゴ類": ["リンゴ", "ナシ", "モモ", "サクランボ"],
+                        "瓜・ベリー": ["イチゴ", "ブドウ", "メロン", "スイカ"],
+                        "その他": ["キウイ", "カキ", "マンゴー", "クリ"]
+                    },
+                    "主食": {
+                        "飯": ["おにぎり", "炒飯", "カレー", "牛丼"],
+                        "麺": ["ラーメン", "うどん", "そば", "パスタ"],
+                        "魚介": ["寿司", "刺身", "焼き魚", "天ぷら"],
+                        "パン・粉": ["お好み焼き", "たこ焼き", "パン", "ピザ"]
+                    },
+                    "副菜・菓子": {
+                        "肉料理": ["ステーキ", "ハンバーグ", "唐揚げ", "ソーセージ"],
+                        "汁物": ["味噌汁", "スープ", "シチュー", "グラタン"],
+                        "洋菓子": ["ケーキ", "プリン", "クッキー", "ドーナツ"],
+                        "和菓子": ["団子", "大福", "羊羹", "たい焼き"]
+                    }
+                },
+                "スポーツ": {
+                    "球技": {
+                        "チーム": ["サッカー", "野球", "ラグビー", "アメフト"],
+                        "ネット型": ["バレー", "バスケ", "ハンド", "ドッジ"],
+                        "ラケット": ["テニス", "卓球", "バド", "スカッシュ"],
+                        "個人・的": ["ゴルフ", "ボウリング", "ビリヤード", "ダーツ"]
+                    },
+                    "陸上・体操": {
+                        "走": ["短距離", "マラソン", "駅伝", "ハードル"],
+                        "跳": ["高跳び", "幅跳び", "棒高跳び", "三段跳び"],
+                        "投": ["砲丸", "やり", "円盤", "ハンマー"],
+                        "体操": ["マット", "跳び箱", "鉄棒", "新体操"]
+                    },
+                    "格闘技": {
+                        "武道": ["柔道", "剣道", "空手", "相撲"],
+                        "打撃": ["ボクシング", "キック", "テコンドー", "ムエタイ"],
+                        "組技": ["レスリング", "サンボ", "柔術", "合気道"],
+                        "武器": ["フェンシング", "なぎなた", "弓道", "アーチェリー"]
+                    },
+                    "水・雪・氷": {
+                        "水泳": ["クロール", "平泳ぎ", "背泳ぎ", "バタフライ"],
+                        "雪上": ["スキー", "スノボ", "ジャンプ", "クロカン"],
+                        "氷上": ["スケート", "フィギュア", "ホッケー", "カーリング"],
+                        "水上": ["サーフィン", "ヨット", "カヌー", "水球"]
+                    }
+                },
+                "日用品": {
+                    "家具": {
+                        "寝具・座": ["椅子", "ソファ", "ベッド", "座布団"],
+                        "机・収納": ["テーブル", "デスク", "本棚", "タンス"],
+                        "照明・鏡": ["蛍光灯", "ライト", "カーテン", "鏡"],
+                        "小物・飾": ["時計", "カレンダー", "花瓶", "クッション"]
+                    },
+                    "家電": {
+                        "調理": ["冷蔵庫", "レンジ", "炊飯器", "トースター"],
+                        "生活": ["洗濯機", "掃除機", "アイロン", "エアコン"],
+                        "AV機器": ["テレビ", "スピーカー", "ヘッドホン", "カメラ"],
+                        "PC通信": ["パソコン", "スマホ", "タブレット", "プリンタ"]
+                    },
+                    "文具": {
+                        "筆記": ["鉛筆", "ペン", "万年筆", "マジック"],
+                        "切・消": ["消しゴム", "ハサミ", "カッター", "修正液"],
+                        "貼・留": ["のり", "テープ", "ホッチキス", "クリップ"],
+                        "紙・整理": ["ノート", "手帳", "封筒", "ファイル"]
+                    },
+                    "衣類": {
+                        "トップス": ["Tシャツ", "シャツ", "セーター", "ジャケット"],
+                        "ボトムス": ["ズボン", "スカート", "ジーンズ", "短パン"],
+                        "靴": ["靴下", "スニーカー", "ブーツ", "サンダル"],
+                        "小物": ["帽子", "手袋", "マフラー", "ベルト"]
+                    }
+                }
+            },
+            //   raw:  {
+            //   "動物": {
+            //     "大型動物（陸上）": {
+            //       "肉食動物": ["ライオン", "トラ", "チーター", "ヒョウ"],
+            //       "草食動物": ["ゾウ", "キリン", "サイ", "カバ"],
+            //       "クマ類": ["ヒグマ", "シロクマ", "パンダ", "ツキノワグマ"],
+            //       "ウマ類": ["シマウマ", "ウマ", "ロバ", "ポニー"]
+            //     },
+            //     "小型動物（陸上）": {
+            //       "イヌ科": ["オオカミ", "キツネ", "タヌキ", "イヌ"],
+            //       "サル類": ["ゴリラ", "チンパンジー", "ニホンザル", "リスザル"],
+            //       "ネズミ・リス類": ["ネズミ", "リス", "ハムスター", "カピバラ"],
+            //       "その他小動物": ["ウサギ", "ハリネズミ", "モグラ", "スカンク"]
+            //     },
+            //     "水生・水辺の生物": {
+            //       "海の哺乳類": ["クジラ", "イルカ", "シャチ", "アザラシ"],
+            //       "水辺の動物": ["ワニ", "ビーバー", "カワウソ", "カモノハシ"],
+            //       "極地の動物": ["ペンギン", "セイウチ", "オットセイ", "トド"],
+            //       "魚類・水生生物": ["サメ", "エイ", "マンボウ", "カメ"]
+            //     },
+            //     "鳥類": {
+            //       "猛禽類": ["ワシ", "タカ", "フクロウ", "トビ"],
+            //       "野鳥": ["スズメ", "カラス", "ハト", "ツバメ"],
+            //       "家禽": ["ニワトリ", "アヒル", "ダチョウ", "クジャク"],
+            //       "水鳥": ["ハクチョウ", "カモ", "ペリカン", "フラミンゴ"]
+            //     }
+            //   },
+            //   "食べ物": {
+            //     "野菜": {
+            //       "根菜類": ["ニンジン", "ダイコン", "イモ", "サツマイモ"],
+            //       "葉物野菜": ["キャベツ", "レタス", "ホウレンソウ", "ハクサイ"],
+            //       "実野菜": ["トマト", "キュウリ", "ナス", "ピーマン"],
+            //       "香味野菜": ["ネギ", "タマネギ", "ショウガ", "ニンニク"]
+            //     },
+            //     "果物": {
+            //       "柑橘類": ["ミカン", "レモン", "バナナ", "パイン"],
+            //       "リンゴ・モモ類": ["リンゴ", "ナシ", "モモ", "サクランボ"],
+            //       "ベリー・ウリ類": ["イチゴ", "ブドウ", "メロン", "スイカ"],
+            //       "その他果実": ["キウイ", "カキ", "マンゴー", "クリ"]
+            //     },
+            //     "主食・炭水化物": {
+            //       "ご飯もの": ["おにぎり", "炒飯", "カレー", "牛丼"],
+            //       "麺類": ["ラーメン", "うどん", "そば", "パスタ"],
+            //       "魚介料理": ["寿司", "刺身", "焼き魚", "天ぷら"],
+            //       "パン・粉もの": ["お好み焼き", "たこ焼き", "パン", "ピザ"]
+            //     },
+            //     "おかず・甘味": {
+            //       "肉料理": ["ステーキ", "ハンバーグ", "唐揚げ", "ソーセージ"],
+            //       "汁物・スープ": ["味噌汁", "スープ", "シチュー", "グラタン"],
+            //       "洋菓子": ["ケーキ", "プリン", "クッキー", "ドーナツ"],
+            //       "和菓子": ["団子", "大福", "羊羹", "たい焼き"]
+            //     }
+            //   },
+            //   "スポーツ": {
+            //     "球技": {
+            //       "チーム球技": ["サッカー", "野球", "ラグビー", "アメフト"],
+            //       "ネット型球技": ["バレー", "バスケ", "ハンド", "ドッジ"],
+            //       "ラケット競技": ["テニス", "卓球", "バド", "スカッシュ"],
+            //       "個人・ターゲット競技": ["ゴルフ", "ボウリング", "ビリヤード", "ダーツ"]
+            //     },
+            //     "陸上・体操": {
+            //       "競走": ["短距離", "マラソン", "駅伝", "ハードル"],
+            //       "跳躍": ["高跳び", "幅跳び", "棒高跳び", "三段跳び"],
+            //       "投てき": ["砲丸", "やり", "円盤", "ハンマー"],
+            //       "器械体操": ["マット", "跳び箱", "鉄棒", "新体操"]
+            //     },
+            //     "格闘技": {
+            //       "武道": ["柔道", "剣道", "空手", "相撲"],
+            //       "打撃系格闘技": ["ボクシング", "キック", "テコンドー", "ムエタイ"],
+            //       "組技系格闘技": ["レスリング", "サンボ", "柔術", "合気道"],
+            //       "武器・道具系": ["フェンシング", "なぎなた", "弓道", "アーチェリー"]
+            //     },
+            //     "水・雪・氷上競技": {
+            //       "競泳": ["クロール", "平泳ぎ", "背泳ぎ", "バタフライ"],
+            //       "雪上競技": ["スキー", "スノボ", "ジャンプ", "クロカン"],
+            //       "氷上競技": ["スケート", "フィギュア", "ホッケー", "カーリング"],
+            //       "マリンスポーツ": ["サーフィン", "ヨット", "カヌー", "水球"]
+            //     }
+            //   },
+            //   "日用品": {
+            //     "家具・インテリア": {
+            //       "寝具・椅子": ["椅子", "ソファ", "ベッド", "座布団"],
+            //       "デスク・収納": ["テーブル", "デスク", "本棚", "タンス"],
+            //       "照明・建具": ["蛍光灯", "ライト", "カーテン", "鏡"],
+            //       "インテリア小物": ["時計", "カレンダー", "花瓶", "クッション"]
+            //     },
+            //     "家電製品": {
+            //       "キッチン家電": ["冷蔵庫", "レンジ", "炊飯器", "トースター"],
+            //       "生活家電": ["洗濯機", "掃除機", "アイロン", "エアコン"],
+            //       "AV機器": ["テレビ", "スピーカー", "ヘッドホン", "カメラ"],
+            //       "PC・モバイル": ["パソコン", "スマホ", "タブレット", "プリンタ"]
+            //     },
+            //     "文房具": {
+            //       "筆記具": ["鉛筆", "ペン", "万年筆", "マジック"],
+            //       "切断・修正用品": ["消しゴム", "ハサミ", "カッター", "修正液"],
+            //       "留め具・接着用品": ["のり", "テープ", "ホッチキス", "クリップ"],
+            //       "ノート・ファイル類": ["ノート", "手帳", "封筒", "ファイル"]
+            //     },
+            //     "衣類": {
+            //       "トップス": ["Tシャツ", "シャツ", "セーター", "ジャケット"],
+            //       "ボトムス": ["ズボン", "スカート", "ジーンズ", "短パン"],
+            //       "靴・フットウェア": ["靴下", "スニーカー", "ブーツ", "サンダル"],
+            //       "服飾小物": ["帽子", "手袋", "マフラー", "ベルト"]
+            //     }
+            //   }
+            // },
+            // raw: {
+            //     "動物": {
+            //         "陸上・大型": { "肉食": ["ライオン","トラ","チーター","ヒョウ"], "草食": ["ゾウ","キリン","サイ","カバ"], "クマ類": ["ヒグマ","シロクマ","パンダ","ツキノワグマ"], "ウマ類": ["シマウマ","ウマ","ロバ","ポニー"] },
+            //         "陸上・小型": { "イヌ科": ["オオカミ","キツネ","タヌキ","イヌ"], "サル目": ["ゴリラ","チンパンジー","ニホンザル","リスザル"], "げっ歯": ["ネズミ","リス","ハムスター","カピバラ"], "小動物": ["ウサギ","ハリネズミ","モグラ","スカンク"] },
+            //         "水辺": { "海獣": ["クジラ","イルカ","シャチ","アザラシ"], "水辺": ["ワニ","ビーバー","カワウソ","カモノハシ"], "極地": ["ペンギン","セイウチ","オットセイ","トド"], "魚類": ["サメ","エイ","マンボウ","カメ"] },
+            //         "空": { "猛禽": ["ワシ","タカ","フクロウ","トビ"], "野鳥": ["スズメ","カラス","ハト","ツバメ"], "家禽": ["ニワトリ","アヒル","ダチョウ","クジャク"], "水鳥": ["ハクチョウ","カモ","ペリカン","フラミンゴ"] }
+            //     },
+            //     "食べ物": {
+            //         "野菜": { "根菜": ["ニンジン","ダイコン","イモ","サツマイモ"], "葉物": ["キャベツ","レタス","ホウレンソウ","ハクサイ"], "実": ["トマト","キュウリ","ナス","ピーマン"], "香": ["ネギ","タマネギ","ショウガ","ニンニク"] },
+            //         "果物": { "柑橘": ["ミカン","レモン","バナナ","パイン"], "バラ科": ["リンゴ","ナシ","モモ","サクランボ"], "ベリー": ["イチゴ","ブドウ","メロン","スイカ"], "他": ["キウイ","カキ","マンゴー","クリ"] },
+            //         "和食": { "飯": ["おにぎり","炒飯","カレー","牛丼"], "麺": ["ラーメン","うどん","そば","パスタ"], "魚": ["寿司","刺身","焼き魚","天ぷら"], "粉": ["お好み焼き","たこ焼き","パン","ピザ"] },
+            //         "洋食": { "肉": ["ステーキ","ハンバーグ","唐揚げ","ソーセージ"], "汁": ["味噌汁","スープ","シチュー","グラタン"], "洋菓": ["ケーキ","プリン","クッキー","ドーナツ"], "和菓": ["団子","大福","羊羹","たい焼き"] }
+            //     },
+            //     "スポーツ": {
+            //         "球技": { "チーム": ["サッカー","野球","ラグビー","アメフト"], "ネット": ["バレー","バスケ","ハンド","ドッジ"], "ラケット": ["テニス","卓球","バド","スカッシュ"], "個人": ["ゴルフ","ボウリング","ビリヤード","ダーツ"] },
+            //         "陸上": { "走": ["短距離","マラソン","駅伝","ハードル"], "跳": ["高跳び","幅跳び","棒高跳び","三段跳び"], "投": ["砲丸","やり","円盤","ハンマー"], "体操": ["マット","跳び箱","鉄棒","新体操"] },
+            //         "格闘": { "日本": ["柔道","剣道","空手","相撲"], "打撃": ["ボクシング","キック","テコンドー","ムエタイ"], "組技": ["レスリング","サンボ","柔術","合気道"], "武器": ["フェンシング","なぎなた","弓道","アーチェリー"] },
+            //         "水泳": { "泳": ["クロール","平泳ぎ","背泳ぎ","バタフライ"], "雪": ["スキー","スノボ","ジャンプ","クロカン"], "氷": ["スケート","フィギュア","ホッケー","カーリング"], "水": ["サーフィン","ヨット","カヌー","水球"] }
+            //     },
+            //     "日用品": {
+            //         "家具": { "寝": ["椅子","ソファ","ベッド","座布団"], "机": ["テーブル","デスク","本棚","タンス"], "光": ["蛍光灯","ライト","カーテン","鏡"], "飾": ["時計","カレンダー","花瓶","クッション"] },
+            //         "家電": { "厨": ["冷蔵庫","レンジ","炊飯器","トースター"], "生": ["洗濯機","掃除機","アイロン","エアコン"], "AV": ["テレビ","スピーカー","ヘッドホン","カメラ"], "PC": ["パソコン","スマホ","タブレット","プリンタ"] },
+            //         "文具": { "書": ["鉛筆","ペン","万年筆","マジック"], "消": ["消しゴム","ハサミ","カッター","修正液"], "貼": ["のり","テープ","ホッチキス","クリップ"], "紙": ["ノート","手帳","封筒","ファイル"] },
+            //         "衣類": { "上": ["Tシャツ","シャツ","セーター","ジャケット"], "下": ["ズボン","スカート","ジーンズ","短パン"], "靴": ["靴下","スニーカー","ブーツ","サンダル"], "小": ["帽子","手袋","マフラー","ベルト"] }
+            //     }
 
-<script>
-// ==========================================
-// CONFIGURATION
-// ==========================================
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz0yGZasvKGPvH67ttyiMhJi2od_dJUZxE3SjgvEjWaqAQPgnV0XAMRT7ny6sf-eB0/exec"; 
-// 例: "https://script.google.com/macros/s/AKfycbx.../exec"
+            // },
 
-const SEQUENCE = [1, 1, 2, 2, 4, 4, 8, 8]; // 実験シーケンス
-
-// ==========================================
-// DATASET GENERATOR (Semantic Path)
-// ==========================================
-const Dataset = {
-    // 256 items (4 genres * 4 cats * 4 subs * 4 items)
-  raw:  {
-  "動物": {
-    "大型動物（陸上）": {
-      "肉食動物": ["ライオン", "トラ", "チーター", "ヒョウ"],
-      "草食動物": ["ゾウ", "キリン", "サイ", "カバ"],
-      "クマ類": ["ヒグマ", "シロクマ", "パンダ", "ツキノワグマ"],
-      "ウマ類": ["シマウマ", "ウマ", "ロバ", "ポニー"]
-    },
-    "小型動物（陸上）": {
-      "イヌ科": ["オオカミ", "キツネ", "タヌキ", "イヌ"],
-      "サル類": ["ゴリラ", "チンパンジー", "ニホンザル", "リスザル"],
-      "ネズミ・リス類": ["ネズミ", "リス", "ハムスター", "カピバラ"],
-      "その他小動物": ["ウサギ", "ハリネズミ", "モグラ", "スカンク"]
-    },
-    "水生・水辺の生物": {
-      "海の哺乳類": ["クジラ", "イルカ", "シャチ", "アザラシ"],
-      "水辺の動物": ["ワニ", "ビーバー", "カワウソ", "カモノハシ"],
-      "極地の動物": ["ペンギン", "セイウチ", "オットセイ", "トド"],
-      "魚類・水生生物": ["サメ", "エイ", "マンボウ", "カメ"]
-    },
-    "鳥類": {
-      "猛禽類": ["ワシ", "タカ", "フクロウ", "トビ"],
-      "野鳥": ["スズメ", "カラス", "ハト", "ツバメ"],
-      "家禽": ["ニワトリ", "アヒル", "ダチョウ", "クジャク"],
-      "水鳥": ["ハクチョウ", "カモ", "ペリカン", "フラミンゴ"]
-    }
-  },
-  "食べ物": {
-    "野菜": {
-      "根菜類": ["ニンジン", "ダイコン", "イモ", "サツマイモ"],
-      "葉物野菜": ["キャベツ", "レタス", "ホウレンソウ", "ハクサイ"],
-      "実野菜": ["トマト", "キュウリ", "ナス", "ピーマン"],
-      "香味野菜": ["ネギ", "タマネギ", "ショウガ", "ニンニク"]
-    },
-    "果物": {
-      "柑橘類": ["ミカン", "レモン", "バナナ", "パイン"],
-      "リンゴ・モモ類": ["リンゴ", "ナシ", "モモ", "サクランボ"],
-      "ベリー・ウリ類": ["イチゴ", "ブドウ", "メロン", "スイカ"],
-      "その他果実": ["キウイ", "カキ", "マンゴー", "クリ"]
-    },
-    "主食・炭水化物": {
-      "ご飯もの": ["おにぎり", "炒飯", "カレー", "牛丼"],
-      "麺類": ["ラーメン", "うどん", "そば", "パスタ"],
-      "魚介料理": ["寿司", "刺身", "焼き魚", "天ぷら"],
-      "パン・粉もの": ["お好み焼き", "たこ焼き", "パン", "ピザ"]
-    },
-    "おかず・甘味": {
-      "肉料理": ["ステーキ", "ハンバーグ", "唐揚げ", "ソーセージ"],
-      "汁物・スープ": ["味噌汁", "スープ", "シチュー", "グラタン"],
-      "洋菓子": ["ケーキ", "プリン", "クッキー", "ドーナツ"],
-      "和菓子": ["団子", "大福", "羊羹", "たい焼き"]
-    }
-  },
-  "スポーツ": {
-    "球技": {
-      "チーム球技": ["サッカー", "野球", "ラグビー", "アメフト"],
-      "ネット型球技": ["バレー", "バスケ", "ハンド", "ドッジ"],
-      "ラケット競技": ["テニス", "卓球", "バド", "スカッシュ"],
-      "個人・ターゲット競技": ["ゴルフ", "ボウリング", "ビリヤード", "ダーツ"]
-    },
-    "陸上・体操": {
-      "競走": ["短距離", "マラソン", "駅伝", "ハードル"],
-      "跳躍": ["高跳び", "幅跳び", "棒高跳び", "三段跳び"],
-      "投てき": ["砲丸", "やり", "円盤", "ハンマー"],
-      "器械体操": ["マット", "跳び箱", "鉄棒", "新体操"]
-    },
-    "格闘技": {
-      "武道": ["柔道", "剣道", "空手", "相撲"],
-      "打撃系格闘技": ["ボクシング", "キック", "テコンドー", "ムエタイ"],
-      "組技系格闘技": ["レスリング", "サンボ", "柔術", "合気道"],
-      "武器・道具系": ["フェンシング", "なぎなた", "弓道", "アーチェリー"]
-    },
-    "水・雪・氷上競技": {
-      "競泳": ["クロール", "平泳ぎ", "背泳ぎ", "バタフライ"],
-      "雪上競技": ["スキー", "スノボ", "ジャンプ", "クロカン"],
-      "氷上競技": ["スケート", "フィギュア", "ホッケー", "カーリング"],
-      "マリンスポーツ": ["サーフィン", "ヨット", "カヌー", "水球"]
-    }
-  },
-  "日用品": {
-    "家具・インテリア": {
-      "寝具・椅子": ["椅子", "ソファ", "ベッド", "座布団"],
-      "デスク・収納": ["テーブル", "デスク", "本棚", "タンス"],
-      "照明・建具": ["蛍光灯", "ライト", "カーテン", "鏡"],
-      "インテリア小物": ["時計", "カレンダー", "花瓶", "クッション"]
-    },
-    "家電製品": {
-      "キッチン家電": ["冷蔵庫", "レンジ", "炊飯器", "トースター"],
-      "生活家電": ["洗濯機", "掃除機", "アイロン", "エアコン"],
-      "AV機器": ["テレビ", "スピーカー", "ヘッドホン", "カメラ"],
-      "PC・モバイル": ["パソコン", "スマホ", "タブレット", "プリンタ"]
-    },
-    "文房具": {
-      "筆記具": ["鉛筆", "ペン", "万年筆", "マジック"],
-      "切断・修正用品": ["消しゴム", "ハサミ", "カッター", "修正液"],
-      "留め具・接着用品": ["のり", "テープ", "ホッチキス", "クリップ"],
-      "ノート・ファイル類": ["ノート", "手帳", "封筒", "ファイル"]
-    },
-    "衣類": {
-      "トップス": ["Tシャツ", "シャツ", "セーター", "ジャケット"],
-      "ボトムス": ["ズボン", "スカート", "ジーンズ", "短パン"],
-      "靴・フットウェア": ["靴下", "スニーカー", "ブーツ", "サンダル"],
-      "服飾小物": ["帽子", "手袋", "マフラー", "ベルト"]
-    }
-  }
-},
-    // raw: {
-    //     "動物": {
-    //         "陸上・大型": { "肉食": ["ライオン","トラ","チーター","ヒョウ"], "草食": ["ゾウ","キリン","サイ","カバ"], "クマ類": ["ヒグマ","シロクマ","パンダ","ツキノワグマ"], "ウマ類": ["シマウマ","ウマ","ロバ","ポニー"] },
-    //         "陸上・小型": { "イヌ科": ["オオカミ","キツネ","タヌキ","イヌ"], "サル目": ["ゴリラ","チンパンジー","ニホンザル","リスザル"], "げっ歯": ["ネズミ","リス","ハムスター","カピバラ"], "小動物": ["ウサギ","ハリネズミ","モグラ","スカンク"] },
-    //         "水辺": { "海獣": ["クジラ","イルカ","シャチ","アザラシ"], "水辺": ["ワニ","ビーバー","カワウソ","カモノハシ"], "極地": ["ペンギン","セイウチ","オットセイ","トド"], "魚類": ["サメ","エイ","マンボウ","カメ"] },
-    //         "空": { "猛禽": ["ワシ","タカ","フクロウ","トビ"], "野鳥": ["スズメ","カラス","ハト","ツバメ"], "家禽": ["ニワトリ","アヒル","ダチョウ","クジャク"], "水鳥": ["ハクチョウ","カモ","ペリカン","フラミンゴ"] }
-    //     },
-    //     "食べ物": {
-    //         "野菜": { "根菜": ["ニンジン","ダイコン","イモ","サツマイモ"], "葉物": ["キャベツ","レタス","ホウレンソウ","ハクサイ"], "実": ["トマト","キュウリ","ナス","ピーマン"], "香": ["ネギ","タマネギ","ショウガ","ニンニク"] },
-    //         "果物": { "柑橘": ["ミカン","レモン","バナナ","パイン"], "バラ科": ["リンゴ","ナシ","モモ","サクランボ"], "ベリー": ["イチゴ","ブドウ","メロン","スイカ"], "他": ["キウイ","カキ","マンゴー","クリ"] },
-    //         "和食": { "飯": ["おにぎり","炒飯","カレー","牛丼"], "麺": ["ラーメン","うどん","そば","パスタ"], "魚": ["寿司","刺身","焼き魚","天ぷら"], "粉": ["お好み焼き","たこ焼き","パン","ピザ"] },
-    //         "洋食": { "肉": ["ステーキ","ハンバーグ","唐揚げ","ソーセージ"], "汁": ["味噌汁","スープ","シチュー","グラタン"], "洋菓": ["ケーキ","プリン","クッキー","ドーナツ"], "和菓": ["団子","大福","羊羹","たい焼き"] }
-    //     },
-    //     "スポーツ": {
-    //         "球技": { "チーム": ["サッカー","野球","ラグビー","アメフト"], "ネット": ["バレー","バスケ","ハンド","ドッジ"], "ラケット": ["テニス","卓球","バド","スカッシュ"], "個人": ["ゴルフ","ボウリング","ビリヤード","ダーツ"] },
-    //         "陸上": { "走": ["短距離","マラソン","駅伝","ハードル"], "跳": ["高跳び","幅跳び","棒高跳び","三段跳び"], "投": ["砲丸","やり","円盤","ハンマー"], "体操": ["マット","跳び箱","鉄棒","新体操"] },
-    //         "格闘": { "日本": ["柔道","剣道","空手","相撲"], "打撃": ["ボクシング","キック","テコンドー","ムエタイ"], "組技": ["レスリング","サンボ","柔術","合気道"], "武器": ["フェンシング","なぎなた","弓道","アーチェリー"] },
-    //         "水泳": { "泳": ["クロール","平泳ぎ","背泳ぎ","バタフライ"], "雪": ["スキー","スノボ","ジャンプ","クロカン"], "氷": ["スケート","フィギュア","ホッケー","カーリング"], "水": ["サーフィン","ヨット","カヌー","水球"] }
-    //     },
-    //     "日用品": {
-    //         "家具": { "寝": ["椅子","ソファ","ベッド","座布団"], "机": ["テーブル","デスク","本棚","タンス"], "光": ["蛍光灯","ライト","カーテン","鏡"], "飾": ["時計","カレンダー","花瓶","クッション"] },
-    //         "家電": { "厨": ["冷蔵庫","レンジ","炊飯器","トースター"], "生": ["洗濯機","掃除機","アイロン","エアコン"], "AV": ["テレビ","スピーカー","ヘッドホン","カメラ"], "PC": ["パソコン","スマホ","タブレット","プリンタ"] },
-    //         "文具": { "書": ["鉛筆","ペン","万年筆","マジック"], "消": ["消しゴム","ハサミ","カッター","修正液"], "貼": ["のり","テープ","ホッチキス","クリップ"], "紙": ["ノート","手帳","封筒","ファイル"] },
-    //         "衣類": { "上": ["Tシャツ","シャツ","セーター","ジャケット"], "下": ["ズボン","スカート","ジーンズ","短パン"], "靴": ["靴下","スニーカー","ブーツ","サンダル"], "小": ["帽子","手袋","マフラー","ベルト"] }
-    //     }
-
-    // },
-    
-    // Generate Path for D=8
-    getDeepPath(g, c, s, items) {
-        return items.map((itm, i) => {
-            const l1 = (g=="動物"||g=="食べ物") ? "自然" : "人工"; // Level 1
-            const l3 = (c.includes("大型")||c.includes("根菜")||c.includes("球技")||c.includes("家具")) ? "グループA" : "グループB"; // Level 3 (Simplified for logic, displayed as semantic later)
-            // Ideally fully semantic, but for D=8 we ensure valid paths.
-            // Using a simplified semantic label for mid-layers to save code space while keeping "Meaningful"
-            // Re-using specific logic from previous version:
-            const l7 = (i<2) ? `${items[0]}・${items[1]}` : `${items[2]}・${items[3]}`;
-            return { name: itm, path: [l1, g, c, s, l7] };
-        });
-    },
-    getList() {
-        let list = [];
-        for(let g in this.raw) for(let c in this.raw[g]) for(let s in this.raw[g][c]) {
-            const arr = this.raw[g][c][s];
-            const deep = this.getDeepPath(g,c,s,arr);
-            deep.forEach(d => list.push({
-                name: d.name, path4: [g,c,s], path8: d.path
-            }));
-        }
-        return list;
-    }
-};
-
-// ==========================================
-// APP LOGIC
-// ==========================================
-const App = {
-    state: {
-        sessionID: null,
-        stepIndex: 0,    // 0 to 7
-        results: [],     // Array to store result of each step
-        
-        // Current Step Data
-        depth: 1, items: [], target: null,
-        pathStack: [], startTime: 0, errors: 0
-    },
-
-    startSession() {
-        this.state.sessionID = 'S-' + Date.now();
-        this.state.stepIndex = 0;
-        this.state.results = [];
-        this.startStep();
-    },
-
-    startStep() {
-        if (this.state.stepIndex >= SEQUENCE.length) {
-            this.finishSession();
-            return;
-        }
-
-        // Setup current step
-        this.state.depth = SEQUENCE[this.state.stepIndex];
-        this.state.items = Dataset.getList();
-        this.state.errors = 0;
-        this.state.pathStack = [];
-
-        // Random Target
-        const idx = Math.floor(Math.random() * this.state.items.length);
-        this.state.target = this.state.items[idx].name;
-
-        // UI Updates
-        this.switchScreen('screen-game');
-        document.getElementById('target-disp').textContent = this.state.target;
-        this.updateProgress();
-
-        // Build Tree
-        const root = this.buildTree();
-        this.enter(root);
-        this.state.startTime = performance.now();
-        window.scrollTo(0,0);
-    },
-
-    updateProgress() {
-        const pct = (this.state.stepIndex / SEQUENCE.length) * 100;
-        document.getElementById('progress-bar').style.width = pct + "%";
-    },
-
-    buildTree() {
-        const d = this.state.depth;
-        const list = this.state.items;
-        const root = { label: "Top", children: [] };
-        
-        if(d === 1) {
-            const s = [...list].sort(()=>Math.random()-0.5);
-            root.children = s.map(i => ({ isLeaf:true, label:i.name }));
-            return root;
-        }
-
-        const build = (arr, level, maxL) => {
-            if(level >= maxL) return arr.map(i => ({ isLeaf:true, label:i.name }));
-            
-            const groups = {};
-            arr.forEach(i => {
-                let key = "";
-                if(d===2) key = `${i.path4[0]}・${i.path4[1]}`;
-                else if(d===4) key = i.path4[level];
-                else if(d===8) key = i.path8[level];
-                
-                if(!groups[key]) groups[key] = [];
-                groups[key].push(i);
-            });
-            
-            return Object.keys(groups).map(k => ({
-                isLeaf:false, label:k,
-                hint: `${groups[k].length}項目`,
-                children: build(groups[k], level+(d===2?10:1), maxL)
-            }));
+            // Generate Path for D=8
+            getDeepPath(g, c, s, items) {
+                return items.map((itm, i) => {
+                    const l1 = (g == "動物" || g == "食べ物") ? "自然" : "人工"; // Level 1
+                    const l3 = (c.includes("大型") || c.includes("根菜") || c.includes("球技") || c.includes("家具")) ? "グループA" : "グループB"; // Level 3 (Simplified for logic, displayed as semantic later)
+                    // Ideally fully semantic, but for D=8 we ensure valid paths.
+                    // Using a simplified semantic label for mid-layers to save code space while keeping "Meaningful"
+                    // Re-using specific logic from previous version:
+                    const l7 = (i < 2) ? `${items[0]}・${items[1]}` : `${items[2]}・${items[3]}`;
+                    return { name: itm, path: [l1, g, c, s, l7] };
+                });
+            },
+            getList() {
+                let list = [];
+                for (let g in this.raw) for (let c in this.raw[g]) for (let s in this.raw[g][c]) {
+                    const arr = this.raw[g][c][s];
+                    const deep = this.getDeepPath(g, c, s, arr);
+                    deep.forEach(d => list.push({
+                        name: d.name, path4: [g, c, s], path8: d.path
+                    }));
+                }
+                return list;
+            }
         };
 
-        let maxL = (d===2)?1 : (d===4)?3 : 5;
-        root.children = build(list, 0, maxL);
-        return root;
-    },
+        // ==========================================
+        // APP LOGIC
+        // ==========================================
+        const App = {
+            state: {
+                sessionID: null,
+                stepIndex: 0,    // 0 to 7
+                results: [],     // Array to store result of each step
 
-    enter(node) {
-        this.state.pathStack.push(node);
-        this.render();
-    },
-    up() {
-        if(this.state.pathStack.length > 1) {
-            this.state.pathStack.pop();
-            this.render();
-        }
-    },
-    render() {
-        const cur = this.state.pathStack[this.state.pathStack.length-1];
-        const area = document.getElementById('grid-area');
-        const crumbs = document.getElementById('breadcrumbs');
-        const btn = document.getElementById('btn-back');
-        
-        // Breadcrumbs (Scrollable)
-        crumbs.innerHTML = this.state.pathStack.map(n => 
-            `<span style="margin-right:5px;">${n.label.split("・")[0]} &gt;</span>`
-        ).join("");
-        
-        btn.disabled = (this.state.pathStack.length <= 1);
-        area.innerHTML = "";
-        
-        cur.children.forEach(c => {
-            const el = document.createElement('div');
-            el.className = `item ${c.isLeaf ? 'leaf' : 'folder'}`;
-            el.innerHTML = c.isLeaf ? 
-                `<div class="leaf-label">${c.label}</div>` : 
-                `<div class="folder-label">${c.label}</div><div class="folder-hint">${c.hint}</div>`;
-            
-            el.onclick = (e) => {
-                e.preventDefault(); // Prevent double tap zoom etc
-                c.isLeaf ? this.check(c.label, el) : this.enter(c);
-            };
-            area.appendChild(el);
-        });
-    },
+                // Current Step Data
+                depth: 1, items: [], target: null,
+                pathStack: [], startTime: 0, errors: 0
+            },
 
-    check(name, el) {
-        if(name === this.state.target) {
-            this.stepComplete();
-        } else {
-            this.state.errors++;
-            el.classList.add('shake');
-            setTimeout(()=>el.classList.remove('shake'), 300);
-        }
-    },
+            startSession() {
+                this.state.sessionID = 'S-' + Date.now();
+                this.state.stepIndex = 0;
+                this.state.results = [];
+                this.startStep();
+            },
 
-    stepComplete() {
-        const time = Math.round(performance.now() - this.state.startTime);
-        
-        // Record Data
-        this.state.results.push({
-            depth: this.state.depth,
-            time: time,
-            error: this.state.errors,
-            target: this.state.target
-        });
+            startStep() {
+                if (this.state.stepIndex >= SEQUENCE.length) {
+                    this.finishSession();
+                    return;
+                }
 
-        // Next Step
-        this.state.stepIndex++;
-        this.startStep();
-    },
+                // Setup current step
+                this.state.depth = SEQUENCE[this.state.stepIndex];
+                this.state.items = Dataset.getList();
+                this.state.errors = 0;
+                this.state.pathStack = [];
 
-    async finishSession() {
-        this.switchScreen('screen-end');
-        document.getElementById('sending-overlay').style.display = 'flex';
+                // Random Target
+                const idx = Math.floor(Math.random() * this.state.items.length);
+                this.state.target = this.state.items[idx].name;
 
-        const payload = {
-            sessionID: this.state.sessionID,
-            userID: "User-" + Math.floor(Math.random()*1000), // 簡易ID
-            results: this.state.results
+                // UI Updates
+                this.switchScreen('screen-game');
+                document.getElementById('target-disp').textContent = this.state.target;
+                this.updateProgress();
+
+                // Build Tree
+                const root = this.buildTree();
+                this.enter(root);
+                this.state.startTime = performance.now();
+                window.scrollTo(0, 0);
+            },
+
+            updateProgress() {
+                const pct = (this.state.stepIndex / SEQUENCE.length) * 100;
+                document.getElementById('progress-bar').style.width = pct + "%";
+            },
+
+            buildTree() {
+                const d = this.state.depth;
+                const list = this.state.items;
+                const root = { label: "Top", children: [] };
+
+                if (d === 1) {
+                    const s = [...list].sort(() => Math.random() - 0.5);
+                    root.children = s.map(i => ({ isLeaf: true, label: i.name }));
+                    return root;
+                }
+
+                const build = (arr, level, maxL) => {
+                    if (level >= maxL) return arr.map(i => ({ isLeaf: true, label: i.name }));
+
+                    const groups = {};
+                    arr.forEach(i => {
+                        let key = "";
+                        if (d === 2) key = `${i.path4[0]}・${i.path4[1]}`;
+                        else if (d === 4) key = i.path4[level];
+                        else if (d === 8) key = i.path8[level];
+
+                        if (!groups[key]) groups[key] = [];
+                        groups[key].push(i);
+                    });
+
+                    return Object.keys(groups).map(k => ({
+                        isLeaf: false, label: k,
+                        hint: `${groups[k].length}項目`,
+                        children: build(groups[k], level + (d === 2 ? 10 : 1), maxL)
+                    }));
+                };
+
+                let maxL = (d === 2) ? 1 : (d === 4) ? 3 : 5;
+                root.children = build(list, 0, maxL);
+                return root;
+            },
+
+            enter(node) {
+                this.state.pathStack.push(node);
+                this.render();
+            },
+            up() {
+                if (this.state.pathStack.length > 1) {
+                    this.state.pathStack.pop();
+                    this.render();
+                }
+            },
+            render() {
+                const cur = this.state.pathStack[this.state.pathStack.length - 1];
+                const area = document.getElementById('grid-area');
+                const crumbs = document.getElementById('breadcrumbs');
+                const btn = document.getElementById('btn-back');
+
+                // Breadcrumbs (Scrollable)
+                crumbs.innerHTML = this.state.pathStack.map(n =>
+                    `<span style="margin-right:5px;">${n.label.split("・")[0]} &gt;</span>`
+                ).join("");
+
+                btn.disabled = (this.state.pathStack.length <= 1);
+                area.innerHTML = "";
+
+                cur.children.forEach(c => {
+                    const el = document.createElement('div');
+                    el.className = `item ${c.isLeaf ? 'leaf' : 'folder'}`;
+                    el.innerHTML = c.isLeaf ?
+                        `<div class="leaf-label">${c.label}</div>` :
+                        `<div class="folder-label">${c.label}</div><div class="folder-hint">${c.hint}</div>`;
+
+                    el.onclick = (e) => {
+                        e.preventDefault(); // Prevent double tap zoom etc
+                        c.isLeaf ? this.check(c.label, el) : this.enter(c);
+                    };
+                    area.appendChild(el);
+                });
+            },
+
+            check(name, el) {
+                if (name === this.state.target) {
+                    this.stepComplete();
+                } else {
+                    this.state.errors++;
+                    el.classList.add('shake');
+                    setTimeout(() => el.classList.remove('shake'), 300);
+                }
+            },
+
+            stepComplete() {
+                const time = Math.round(performance.now() - this.state.startTime);
+
+                // Record Data
+                this.state.results.push({
+                    depth: this.state.depth,
+                    time: time,
+                    error: this.state.errors,
+                    target: this.state.target
+                });
+
+                // Next Step
+                this.state.stepIndex++;
+                this.startStep();
+            },
+
+            async finishSession() {
+                this.switchScreen('screen-end');
+                document.getElementById('sending-overlay').style.display = 'flex';
+
+                const payload = {
+                    sessionID: this.state.sessionID,
+                    userID: "User-" + Math.floor(Math.random() * 1000), // 簡易ID
+                    results: this.state.results
+                };
+
+                if (GAS_API_URL.includes("ここにGAS")) {
+                    alert("GASのURLが設定されていません。コードを確認してください。");
+                    document.getElementById('sending-overlay').style.display = 'none';
+                    return;
+                }
+
+                try {
+                    // Send to GAS
+                    // mode: 'no-cors' is used to avoid CORS errors with simple GAS setups,
+                    // but it means we can't read the response.
+                    // If you deployed correctly as "Anyone", standardized fetch works.
+                    await fetch(GAS_API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // 重要: これがないとGASへのPOSTはブロックされやすい
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // no-corsなので成功したとみなして進む
+                    document.getElementById('sending-overlay').style.display = 'none';
+                    this.switchScreen('screen-complete');
+
+                } catch (e) {
+                    alert("送信エラー: " + e);
+                    document.getElementById('sending-overlay').style.display = 'none';
+                }
+            },
+
+            quit() {
+                if (confirm("実験を中断してトップに戻りますか？データは破棄されます。")) {
+                    location.reload();
+                }
+            },
+
+            switchScreen(id) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            }
         };
-
-        if(GAS_API_URL.includes("ここにGAS")) {
-            alert("GASのURLが設定されていません。コードを確認してください。");
-            document.getElementById('sending-overlay').style.display = 'none';
-            return;
-        }
-
-        try {
-            // Send to GAS
-            // mode: 'no-cors' is used to avoid CORS errors with simple GAS setups,
-            // but it means we can't read the response.
-            // If you deployed correctly as "Anyone", standardized fetch works.
-            await fetch(GAS_API_URL, {
-                method: 'POST',
-                mode: 'no-cors', // 重要: これがないとGASへのPOSTはブロックされやすい
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            // no-corsなので成功したとみなして進む
-            document.getElementById('sending-overlay').style.display = 'none';
-            this.switchScreen('screen-complete');
-
-        } catch (e) {
-            alert("送信エラー: " + e);
-            document.getElementById('sending-overlay').style.display = 'none';
-        }
-    },
-
-    quit() {
-        if(confirm("実験を中断してトップに戻りますか？データは破棄されます。")) {
-            location.reload();
-        }
-    },
-
-    switchScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-};
-</script>
+    </script>
 
 </body>
+
 </html>
