@@ -2,185 +2,244 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>実験ツール (Excel連携版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>階層探索実験 (Sequence Mode)</title>
     <style>
         :root {
             --primary: #2c3e50;
             --accent: #2980b9;
-            --bg: #f4f6f9;
+            --bg: #f0f2f5;
+            --folder: #fffbf0;
+            --folder-border: #f39c12;
+            --leaf: #f0fdf4;
+            --leaf-border: #2ecc71;
         }
+
         body {
-            font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
             background: var(--bg);
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .container {
-            width: 95%;
-            max-width: 1000px;
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        h1 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
-        
-        /* Layout */
-        .layout-split { display: flex; gap: 20px; }
-        .main-panel { flex: 2; }
-        .side-panel { flex: 1; border-left: 1px solid #eee; padding-left: 20px; }
 
-        /* Screens */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screen Management */
         .screen { display: none; }
-        .screen.active { display: block; }
+        .screen.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Headers & Text */
+        h1 { margin: 0 0 15px 0; font-size: 1.4rem; color: var(--primary); text-align: center; }
+        p { font-size: 0.9rem; color: #666; line-height: 1.5; }
 
         /* UI Elements */
-        .config-box { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        select { padding: 8px; font-size: 1rem; width: 100%; margin-bottom: 10px; }
-        button {
-            background: var(--accent); color: white; border: none;
-            padding: 10px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer;
-            transition: background 0.2s; width: 100%;
+        .btn-large {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: opacity 0.2s;
         }
-        button:hover { background: #1c6ea4; }
-        button.btn-green { background: #27ae60; }
-        button.btn-green:hover { background: #219150; }
-        button.btn-gray { background: #95a5a6; }
+        .btn-large:active { opacity: 0.8; }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
 
-        /* Game Grid */
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 20px;
+            background: #eee;
+            border-radius: 4px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Game Area */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
         .target-box {
-            background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
-            padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px;
+            background: #fff3cd;
+            border: 2px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
-        .target-name { font-size: 1.8rem; font-weight: bold; }
-        
-        .breadcrumbs { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 10px; padding: 5px; background: #fafafa; }
+        .target-label { font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 4px; }
+        .target-name { font-size: 1.8rem; font-weight: bold; word-break: break-all; }
 
+        .breadcrumbs {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            white-space: nowrap;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        /* Responsive Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* Default mobile: 2 cols */
             gap: 10px;
+            margin-bottom: 20px;
         }
-        .item {
-            padding: 15px 5px; min-height: 70px;
-            border: 1px solid #ddd; border-radius: 6px;
-            background: #fff; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-            user-select: none;
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         }
-        .item:hover { background: #f9f9f9; border-color: #bbb; }
-        .item.folder { border-top: 4px solid #f39c12; background: #fffbf0; }
-        .item.leaf { border-top: 4px solid #2ecc71; background: #f0fdf4; }
-        
-        /* History Table */
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
-        .history-table th, .history-table td { border-bottom: 1px solid #eee; padding: 6px; text-align: left; }
-        .history-table th { background: #f8f9fa; color: #666; }
-        .history-table tr:first-child td { font-weight: bold; color: var(--accent); } /* Newest entry */
 
-        /* Utility */
-        .toast {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #333; color: #fff; padding: 10px 20px; border-radius: 4px;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        .item {
+            aspect-ratio: 4/3; /* スマホでタップしやすいサイズ比 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .toast.show { opacity: 1; }
+        .item:active { transform: scale(0.98); background: #f5f5f5; }
+
+        .item.folder { border-top: 4px solid var(--folder-border); background: var(--folder-bg); }
+        .item.leaf { border-top: 4px solid var(--leaf-border); background: var(--leaf-bg); }
+        
+        .folder-label { font-weight: bold; font-size: 1rem; color: #d35400; line-height: 1.2; }
+        .folder-hint { font-size: 0.75rem; color: #888; margin-top: 4px; }
+        .leaf-label { font-weight: bold; font-size: 1.1rem; color: #27ae60; }
+
+        .shake { animation: shake 0.3s; border-color: #e74c3c !important; }
+        @keyframes shake { 0%,100% {transform:translateX(0);} 25% {transform:translateX(-5px);} 75% {transform:translateX(5px);} }
+
+        /* Sending Status */
+        .sending-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+            z-index: 1000;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
-<div class="container layout-split">
+<div class="container">
     
-    <div class="main-panel">
-        <h1>実験ツール (Excel連携版)</h1>
-
-        <div id="screen-config" class="screen active">
-            <div class="config-box">
-                <label><strong>階層深度 (Depth):</strong></label>
-                <select id="depth-select">
-                    <option value="1">D=1 (フラット: 256択)</option>
-                    <option value="2">D=2 (16カテゴリ × 16)</option>
-                    <option value="4">D=4 (4ジャンル > 4 > 4 > 4)</option>
-                    <option value="8">D=8 (詳細属性ツリー)</option>
-                </select>
-                <p style="font-size:0.8rem; color:#666; margin:5px 0 15px;">
-                    ※ 右側の履歴パネルに結果が蓄積されます。
-                </p>
-                <button onclick="App.start()">実験スタート</button>
-            </div>
+    <div id="screen-start" class="screen active">
+        <h1>階層探索実験</h1>
+        <p>これから8回の探索タスク連続で行います。<br>指示された「ターゲット」をフォルダの中から探してください。</p>
+        <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin:20px 0; font-size:0.9rem;">
+            <strong>実験の流れ:</strong><br>
+            D=1 (2回) → D=2 (2回) → D=4 (2回) → D=8 (2回)<br>
+            <br>
+            ※途中で中断する場合は、右上の「TOPへ」を押してください。
         </div>
-
-        <div id="screen-game" class="screen">
-            <div class="target-box">
-                <div style="font-size:0.8rem;">TARGET</div>
-                <div class="target-name" id="target-disp"></div>
-            </div>
-            
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button class="btn-gray" onclick="App.up()" id="btn-back" style="width:auto;">← 戻る</button>
-                <div class="breadcrumbs" id="breadcrumbs">Top</div>
-            </div>
-
-            <div id="grid-area" class="grid"></div>
-        </div>
-
-        <div id="screen-result" class="screen">
-            <div style="text-align:center; padding: 30px; background:#f8f9fa; border-radius:8px;">
-                <h2 style="color:#27ae60; margin:0 0 10px;">実験完了</h2>
-                <div style="font-size:2rem; font-weight:bold; color:#333; margin-bottom:20px;">
-                    <span id="res-time"></span> ms
-                </div>
-                
-                <div style="display:grid; gap:10px; max-width:300px; margin:0 auto;">
-                    <button class="btn-green" onclick="App.copyResult()">
-                        📋 結果をコピー (Excel用)
-                    </button>
-                    <button onclick="App.retry()">次の実験へ</button>
-                    <button class="btn-gray" onclick="App.resetConfig()">設定に戻る</button>
-                </div>
-                <p style="font-size:0.8rem; color:#666; margin-top:10px;">
-                    ※コピーボタンを押してExcelで貼り付け(Ctrl+V)してください。<br>
-                    形式: [深度] [ターゲット] [時間] [誤回答]
-                </p>
-            </div>
-        </div>
+        <button class="btn-large" onclick="App.startSession()">実験を開始する</button>
     </div>
 
-    <div class="side-panel">
-        <h3>記録データ</h3>
-        <p style="font-size:0.8rem; color:#666;">ブラウザを閉じるまで保持されます</p>
-        
-        <table class="history-table">
-            <thead>
-                <tr>
-                    <th>D</th>
-                    <th>Time</th>
-                    <th>Error</th>
-                    <th>Target</th>
-                </tr>
-            </thead>
-            <tbody id="history-body">
-                </tbody>
-        </table>
-
-        <div style="margin-top:20px;">
-            <button class="btn-gray" onclick="App.downloadAllCSV()">💾 まとめてCSV保存</button>
+    <div id="screen-game" class="screen">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
         </div>
+
+        <div class="header-nav">
+            <button class="btn-secondary" id="btn-back" onclick="App.up()">← 戻る</button>
+            <button class="btn-secondary" style="background:#e74c3c; font-size:0.8rem;" onclick="App.quit()">TOPへ</button>
+        </div>
+
+        <div class="target-box">
+            <span class="target-label">TARGET</span>
+            <div class="target-name" id="target-disp">Loading...</div>
+        </div>
+
+        <div class="breadcrumbs" id="breadcrumbs">Top</div>
+        <div id="grid-area" class="grid"></div>
     </div>
+
+    <div id="screen-end" class="screen">
+        <h1>実験終了</h1>
+        <p>お疲れ様でした。データを送信しています...</p>
+        <div class="spinner"></div>
+    </div>
+
+    <div id="screen-complete" class="screen">
+        <h1 style="color:#27ae60;">送信完了</h1>
+        <p>データが正常に記録されました。</p>
+        <p>ご協力ありがとうございました。</p>
+        <button class="btn-large" onclick="location.reload()">トップに戻る</button>
+    </div>
+
 </div>
 
-<div id="toast" class="toast">コピーしました！</div>
+<div id="sending-overlay" class="sending-overlay">
+    <div class="spinner"></div>
+    <div style="font-weight:bold; color:#555;">データ送信中...</div>
+</div>
 
 <script>
-/**
- * データセット生成ロジック (D=8対応版)
- */
+// ==========================================
+// CONFIGURATION
+// ==========================================
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz0yGZasvKGPvH67ttyiMhJi2od_dJUZxE3SjgvEjWaqAQPgnV0XAMRT7ny6sf-eB0/exec"; 
+// 例: "https://script.google.com/macros/s/AKfycbx.../exec"
+
+const SEQUENCE = [1, 1, 2, 2, 4, 4, 8, 8]; // 実験シーケンス
+
+// ==========================================
+// DATASET GENERATOR (Semantic Path)
+// ==========================================
 const Dataset = {
+    // 256 items (4 genres * 4 cats * 4 subs * 4 items)
     raw: {
         "動物": {
             "陸上・大型": { "肉食": ["ライオン","トラ","チーター","ヒョウ"], "草食": ["ゾウ","キリン","サイ","カバ"], "クマ類": ["ヒグマ","シロクマ","パンダ","ツキノワグマ"], "ウマ類": ["シマウマ","ウマ","ロバ","ポニー"] },
@@ -207,11 +266,14 @@ const Dataset = {
             "衣類": { "上": ["Tシャツ","シャツ","セーター","ジャケット"], "下": ["ズボン","スカート","ジーンズ","短パン"], "靴": ["靴下","スニーカー","ブーツ","サンダル"], "小": ["帽子","手袋","マフラー","ベルト"] }
         }
     },
-    // D=8用のパス生成 (省略版)
+    // Generate Path for D=8
     getDeepPath(g, c, s, items) {
-        // 簡易ロジック: 4アイテムを2+2に分割
         return items.map((itm, i) => {
-            const l1 = (g=="動物"||g=="食べ物") ? "自然" : "人工";
+            const l1 = (g=="動物"||g=="食べ物") ? "自然" : "人工"; // Level 1
+            const l3 = (c.includes("大型")||c.includes("根菜")||c.includes("球技")||c.includes("家具")) ? "グループA" : "グループB"; // Level 3 (Simplified for logic, displayed as semantic later)
+            // Ideally fully semantic, but for D=8 we ensure valid paths.
+            // Using a simplified semantic label for mid-layers to save code space while keeping "Meaningful"
+            // Re-using specific logic from previous version:
             const l7 = (i<2) ? `${items[0]}・${items[1]}` : `${items[2]}・${items[3]}`;
             return { name: itm, path: [l1, g, c, s, l7] };
         });
@@ -229,51 +291,78 @@ const Dataset = {
     }
 };
 
+// ==========================================
+// APP LOGIC
+// ==========================================
 const App = {
     state: {
-        history: [], // 全データ蓄積用
+        sessionID: null,
+        stepIndex: 0,    // 0 to 7
+        results: [],     // Array to store result of each step
+        
+        // Current Step Data
         depth: 1, items: [], target: null,
-        pathStack: [], startTime: 0, endTime: 0, errors: 0
+        pathStack: [], startTime: 0, errors: 0
     },
 
-    start() {
-        this.state.depth = parseInt(document.getElementById('depth-select').value);
+    startSession() {
+        this.state.sessionID = 'S-' + Date.now();
+        this.state.stepIndex = 0;
+        this.state.results = [];
+        this.startStep();
+    },
+
+    startStep() {
+        if (this.state.stepIndex >= SEQUENCE.length) {
+            this.finishSession();
+            return;
+        }
+
+        // Setup current step
+        this.state.depth = SEQUENCE[this.state.stepIndex];
         this.state.items = Dataset.getList();
         this.state.errors = 0;
         this.state.pathStack = [];
-        
+
+        // Random Target
         const idx = Math.floor(Math.random() * this.state.items.length);
         this.state.target = this.state.items[idx].name;
-        
-        document.getElementById('target-disp').textContent = this.state.target;
+
+        // UI Updates
         this.switchScreen('screen-game');
-        
+        document.getElementById('target-disp').textContent = this.state.target;
+        this.updateProgress();
+
+        // Build Tree
         const root = this.buildTree();
         this.enter(root);
         this.state.startTime = performance.now();
+        window.scrollTo(0,0);
+    },
+
+    updateProgress() {
+        const pct = (this.state.stepIndex / SEQUENCE.length) * 100;
+        document.getElementById('progress-bar').style.width = pct + "%";
     },
 
     buildTree() {
         const d = this.state.depth;
         const list = this.state.items;
-        
         const root = { label: "Top", children: [] };
         
-        // D=1: Flat Random
         if(d === 1) {
             const s = [...list].sort(()=>Math.random()-0.5);
             root.children = s.map(i => ({ isLeaf:true, label:i.name }));
             return root;
         }
 
-        // Recursive Builder
-        const build = (arr, level, maxL, pKey) => {
+        const build = (arr, level, maxL) => {
             if(level >= maxL) return arr.map(i => ({ isLeaf:true, label:i.name }));
             
             const groups = {};
             arr.forEach(i => {
                 let key = "";
-                if(d===2) key = `${i.path4[0]}・${i.path4[1]}`; // Genre+Cat
+                if(d===2) key = `${i.path4[0]}・${i.path4[1]}`;
                 else if(d===4) key = i.path4[level];
                 else if(d===8) key = i.path8[level];
                 
@@ -283,14 +372,13 @@ const App = {
             
             return Object.keys(groups).map(k => ({
                 isLeaf:false, label:k,
-                hint: `${groups[k].length}`,
-                children: build(groups[k], level+(d===2?10:1), maxL, pKey)
+                hint: `${groups[k].length}項目`,
+                children: build(groups[k], level+(d===2?10:1), maxL)
             }));
         };
 
-        // Execution
-        let maxL = (d===2)?1 : (d===4)?3 : 5; // D=8はpath8[0..4]まで
-        root.children = build(list, 0, maxL, "");
+        let maxL = (d===2)?1 : (d===4)?3 : 5;
+        root.children = build(list, 0, maxL);
         return root;
     },
 
@@ -310,7 +398,11 @@ const App = {
         const crumbs = document.getElementById('breadcrumbs');
         const btn = document.getElementById('btn-back');
         
-        crumbs.innerHTML = this.state.pathStack.map(n => `<span style="margin:0 5px;">${n.label.split("・")[0]}</span>`).join(">");
+        // Breadcrumbs (Scrollable)
+        crumbs.innerHTML = this.state.pathStack.map(n => 
+            `<span style="margin-right:5px;">${n.label.split("・")[0]} &gt;</span>`
+        ).join("");
+        
         btn.disabled = (this.state.pathStack.length <= 1);
         area.innerHTML = "";
         
@@ -318,96 +410,93 @@ const App = {
             const el = document.createElement('div');
             el.className = `item ${c.isLeaf ? 'leaf' : 'folder'}`;
             el.innerHTML = c.isLeaf ? 
-                `<strong>${c.label}</strong>` : 
-                `<strong>${c.label}</strong><span style="font-size:0.7em;color:#666">(${c.hint})</span>`;
+                `<div class="leaf-label">${c.label}</div>` : 
+                `<div class="folder-label">${c.label}</div><div class="folder-hint">${c.hint}</div>`;
             
-            el.onclick = c.isLeaf ? () => this.check(c.label, el) : () => this.enter(c);
+            el.onclick = (e) => {
+                e.preventDefault(); // Prevent double tap zoom etc
+                c.isLeaf ? this.check(c.label, el) : this.enter(c);
+            };
             area.appendChild(el);
         });
     },
 
     check(name, el) {
         if(name === this.state.target) {
-            this.finish();
+            this.stepComplete();
         } else {
             this.state.errors++;
-            el.style.borderColor = "red";
-            setTimeout(()=>el.style.borderColor="#ddd", 300);
+            el.classList.add('shake');
+            setTimeout(()=>el.classList.remove('shake'), 300);
         }
     },
 
-    finish() {
-        this.state.endTime = performance.now();
-        const time = Math.round(this.state.endTime - this.state.startTime);
+    stepComplete() {
+        const time = Math.round(performance.now() - this.state.startTime);
         
-        // 履歴に追加
-        const result = {
-            id: this.state.history.length + 1,
+        // Record Data
+        this.state.results.push({
             depth: this.state.depth,
             time: time,
             error: this.state.errors,
-            target: this.state.target,
-            timestamp: new Date().toLocaleTimeString()
-        };
-        this.state.history.unshift(result); // 先頭に追加
-        this.updateHistoryUI();
-
-        // 結果画面表示
-        document.getElementById('res-time').textContent = time;
-        this.switchScreen('screen-result');
-    },
-
-    updateHistoryUI() {
-        const tbody = document.getElementById('history-body');
-        tbody.innerHTML = this.state.history.map(r => `
-            <tr>
-                <td>${r.depth}</td>
-                <td>${r.time}</td>
-                <td>${r.error}</td>
-                <td style="font-size:0.8em">${r.target}</td>
-            </tr>
-        `).join("");
-    },
-
-    // クリップボードにタブ区切りでコピー
-    copyResult() {
-        const last = this.state.history[0]; // 最新
-        // Excel用フォーマット: 深度 [TAB] ターゲット [TAB] 時間 [TAB] エラー
-        const text = `${last.depth}\t${last.target}\t${last.time}\t${last.error}`;
-        
-        navigator.clipboard.writeText(text).then(() => {
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            target: this.state.target
         });
+
+        // Next Step
+        this.state.stepIndex++;
+        this.startStep();
     },
 
-    retry() { this.start(); }, // 同じ設定で再開
-    resetConfig() { this.switchScreen('screen-config'); },
+    async finishSession() {
+        this.switchScreen('screen-end');
+        document.getElementById('sending-overlay').style.display = 'flex';
+
+        const payload = {
+            sessionID: this.state.sessionID,
+            userID: "User-" + Math.floor(Math.random()*1000), // 簡易ID
+            results: this.state.results
+        };
+
+        if(GAS_API_URL.includes("ここにGAS")) {
+            alert("GASのURLが設定されていません。コードを確認してください。");
+            document.getElementById('sending-overlay').style.display = 'none';
+            return;
+        }
+
+        try {
+            // Send to GAS
+            // mode: 'no-cors' is used to avoid CORS errors with simple GAS setups,
+            // but it means we can't read the response.
+            // If you deployed correctly as "Anyone", standardized fetch works.
+            await fetch(GAS_API_URL, {
+                method: 'POST',
+                mode: 'no-cors', // 重要: これがないとGASへのPOSTはブロックされやすい
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            // no-corsなので成功したとみなして進む
+            document.getElementById('sending-overlay').style.display = 'none';
+            this.switchScreen('screen-complete');
+
+        } catch (e) {
+            alert("送信エラー: " + e);
+            document.getElementById('sending-overlay').style.display = 'none';
+        }
+    },
+
+    quit() {
+        if(confirm("実験を中断してトップに戻りますか？データは破棄されます。")) {
+            location.reload();
+        }
+    },
 
     switchScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-    },
-
-    downloadAllCSV() {
-        if(this.state.history.length === 0) return alert("データがありません");
-        
-        // CSVヘッダ
-        let csv = "\uFEFF実験ID,時刻,深度(D),ターゲット,時間(ms),誤回答\n";
-        // データ行（古い順に並べ替え）
-        [...this.state.history].reverse().forEach(r => {
-            csv += `${r.id},${r.timestamp},${r.depth},${r.target},${r.time},${r.error}\n`;
-        });
-
-        const blob = new Blob([csv], {type:'text/csv'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `experiment_summary_${new Date().getTime()}.csv`;
-        a.click();
     }
 };
 </script>
+
 </body>
 </html>
